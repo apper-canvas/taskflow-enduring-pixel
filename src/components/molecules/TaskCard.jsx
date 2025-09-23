@@ -1,10 +1,10 @@
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { format } from "date-fns"
-import ApperIcon from "@/components/ApperIcon"
-import Checkbox from "@/components/atoms/Checkbox"
-import Badge from "@/components/atoms/Badge"
-import Button from "@/components/atoms/Button"
+import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { format } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Checkbox from "@/components/atoms/Checkbox";
+import Badge from "@/components/atoms/Badge";
 
 const TaskCard = ({ task, onToggleComplete, onDelete, onEdit }) => {
   const [isDeleting, setIsDeleting] = useState(false)
@@ -166,7 +166,7 @@ const TaskCard = ({ task, onToggleComplete, onDelete, onEdit }) => {
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {showDeleteConfirm && (
-          <motion.div
+<motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

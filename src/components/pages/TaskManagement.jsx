@@ -95,7 +95,7 @@ const TaskManagement = () => {
     if (!editingTask) return
     
     try {
-      const updatedTask = await taskService.updateTask(editingTask.Id, taskData)
+const updatedTask = await taskService.updateTask(editingTask.Id, taskData)
       setTasks(prev => prev.map(task => 
         task.Id === editingTask.Id ? updatedTask : task
       ))
@@ -108,7 +108,7 @@ const TaskManagement = () => {
 
   const handleToggleComplete = async (taskId, completed) => {
     try {
-      const updatedTask = await taskService.updateTask(taskId, { completed })
+const updatedTask = await taskService.updateTask(taskId, { completed })
       setTasks(prev => prev.map(task => 
         task.Id === taskId ? updatedTask : task
       ))
