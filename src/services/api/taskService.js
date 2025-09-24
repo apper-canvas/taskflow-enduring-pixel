@@ -16,7 +16,7 @@ export const taskService = {
     try {
       const apperClient = initializeApperClient()
       const params = {
-        fields: [
+fields: [
           {"field": {"Name": "Id"}},
           {"field": {"Name": "Name"}},
           {"field": {"Name": "title_c"}},
@@ -24,6 +24,7 @@ export const taskService = {
           {"field": {"Name": "completed_c"}},
           {"field": {"Name": "priority_c"}},
           {"field": {"Name": "category_c"}},
+          {"field": {"Name": "assignee_c"}},
           {"field": {"Name": "due_date_c"}},
           {"field": {"Name": "created_at_c"}},
           {"field": {"Name": "completed_at_c"}}
@@ -43,7 +44,7 @@ export const taskService = {
         return []
       }
       
-      // Map database fields to frontend format
+// Map database fields to frontend format
       return response.data.map(task => ({
         Id: task.Id,
         title: task.title_c || '',
@@ -51,6 +52,7 @@ export const taskService = {
         completed: task.completed_c || false,
         priority: task.priority_c || 'Medium',
         category: task.category_c?.Name || '',
+        assignee: task.assignee_c?.Name || '',
         dueDate: task.due_date_c || null,
         createdAt: task.created_at_c || new Date().toISOString(),
         completedAt: task.completed_at_c || null
@@ -66,7 +68,7 @@ export const taskService = {
     try {
       const apperClient = initializeApperClient()
       const params = {
-        fields: [
+fields: [
           {"field": {"Name": "Id"}},
           {"field": {"Name": "Name"}},
           {"field": {"Name": "title_c"}},
@@ -74,6 +76,7 @@ export const taskService = {
           {"field": {"Name": "completed_c"}},
           {"field": {"Name": "priority_c"}},
           {"field": {"Name": "category_c"}},
+          {"field": {"Name": "assignee_c"}},
           {"field": {"Name": "due_date_c"}},
           {"field": {"Name": "created_at_c"}},
           {"field": {"Name": "completed_at_c"}}
@@ -87,13 +90,14 @@ export const taskService = {
       }
       
       const task = response.data
-      return {
+return {
         Id: task.Id,
         title: task.title_c || '',
         description: task.description_c || '',
         completed: task.completed_c || false,
         priority: task.priority_c || 'Medium',
         category: task.category_c?.Name || '',
+        assignee: task.assignee_c?.Name || '',
         dueDate: task.due_date_c || null,
         createdAt: task.created_at_c || new Date().toISOString(),
         completedAt: task.completed_at_c || null
@@ -104,7 +108,7 @@ export const taskService = {
     }
   },
 
-  async createTask(taskData) {
+async createTask(taskData) {
     try {
       const apperClient = initializeApperClient()
       
@@ -116,6 +120,15 @@ export const taskService = {
         categoryId = category ? category.Id : null
       }
       
+      // Get assignee ID if assignee is provided
+      let assigneeId = null
+      if (taskData.assignee) {
+        const { assigneeService } = await import('./assigneeService')
+        const assignees = await assigneeService.getAllAssignees()
+        const assignee = assignees.find(ass => ass.name === taskData.assignee)
+        assigneeId = assignee ? assignee.Id : null
+      }
+      
       const params = {
         records: [{
           title_c: taskData.title || '',
@@ -123,6 +136,7 @@ export const taskService = {
           completed_c: false,
           priority_c: taskData.priority || 'Medium',
           category_c: categoryId,
+          assignee_c: assigneeId,
           due_date_c: taskData.dueDate || null,
           created_at_c: new Date().toISOString(),
           completed_at_c: null
@@ -149,13 +163,14 @@ export const taskService = {
         
         if (successful.length > 0) {
           const task = successful[0].data
-          return {
+return {
             Id: task.Id,
             title: task.title_c || '',
             description: task.description_c || '',
             completed: task.completed_c || false,
             priority: task.priority_c || 'Medium',
             category: taskData.category || '',
+            assignee: taskData.assignee || '',
             dueDate: task.due_date_c || null,
             createdAt: task.created_at_c || new Date().toISOString(),
             completedAt: task.completed_at_c || null
@@ -170,7 +185,7 @@ export const taskService = {
     }
   },
 
-  async updateTask(id, updates) {
+async updateTask(id, updates) {
     try {
       const apperClient = initializeApperClient()
       
@@ -186,6 +201,19 @@ export const taskService = {
         }
       }
       
+      // Get assignee ID if assignee is being updated
+      let assigneeId = undefined
+      if (updates.assignee !== undefined) {
+        if (updates.assignee) {
+          const { assigneeService } = await import('./assigneeService')
+          const assignees = await assigneeService.getAllAssignees()
+          const assignee = assignees.find(ass => ass.name === updates.assignee)
+          assigneeId = assignee ? assignee.Id : null
+        } else {
+          assigneeId = null
+        }
+      }
+      
       const updateData = {}
       if (updates.title !== undefined) updateData.title_c = updates.title
       if (updates.description !== undefined) updateData.description_c = updates.description
@@ -195,6 +223,7 @@ export const taskService = {
       }
       if (updates.priority !== undefined) updateData.priority_c = updates.priority
       if (categoryId !== undefined) updateData.category_c = categoryId
+      if (assigneeId !== undefined) updateData.assignee_c = assigneeId
       if (updates.dueDate !== undefined) updateData.due_date_c = updates.dueDate
       
       const params = {
@@ -224,13 +253,14 @@ export const taskService = {
         
         if (successful.length > 0) {
           const task = successful[0].data
-          return {
+return {
             Id: task.Id,
             title: task.title_c || '',
             description: task.description_c || '',
             completed: task.completed_c || false,
             priority: task.priority_c || 'Medium',
             category: updates.category || '',
+            assignee: updates.assignee || '',
             dueDate: task.due_date_c || null,
             createdAt: task.created_at_c || new Date().toISOString(),
             completedAt: task.completed_at_c || null

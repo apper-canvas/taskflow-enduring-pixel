@@ -7,6 +7,7 @@ import Input from "@/components/atoms/Input"
 import Textarea from "@/components/atoms/Textarea"
 import Select from "@/components/atoms/Select"
 import FormField from "@/components/molecules/FormField"
+import { assigneeService } from "@/services/api/assigneeService"
 
 const TaskForm = ({ onSubmit, categories = [], initialTask = null, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -14,18 +15,39 @@ const TaskForm = ({ onSubmit, categories = [], initialTask = null, onCancel }) =
     description: "",
     priority: "Medium",
     category: "",
+    assignee: "",
     dueDate: ""
   })
+  const [assignees, setAssignees] = useState([])
+  const [loadingAssignees, setLoadingAssignees] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState({})
 
+  // Load assignees on component mount
   useEffect(() => {
+    const loadAssignees = async () => {
+      setLoadingAssignees(true)
+      try {
+        const assigneeData = await assigneeService.getAllAssignees()
+        setAssignees(assigneeData)
+      } catch (error) {
+        console.error("Failed to load assignees:", error)
+        toast.error("Failed to load assignees")
+      } finally {
+        setLoadingAssignees(false)
+      }
+    }
+    loadAssignees()
+  }, [])
+
+useEffect(() => {
     if (initialTask) {
       setFormData({
         title: initialTask.title || "",
         description: initialTask.description || "",
         priority: initialTask.priority || "Medium",
         category: initialTask.category || "",
+        assignee: initialTask.assignee || "",
         dueDate: initialTask.dueDate ? initialTask.dueDate.split("T")[0] : ""
       })
     }
@@ -79,12 +101,13 @@ const TaskForm = ({ onSubmit, categories = [], initialTask = null, onCancel }) =
 
       await onSubmit(taskData)
 
-      if (!initialTask) {
+if (!initialTask) {
         setFormData({
           title: "",
           description: "",
           priority: "Medium",
           category: "",
+          assignee: "",
           dueDate: ""
         })
         toast.success("Task created successfully! 🎉")
@@ -159,14 +182,14 @@ const TaskForm = ({ onSubmit, categories = [], initialTask = null, onCancel }) =
             </Select>
           </FormField>
 
-          <FormField
+<FormField
             label="Category"
           >
             <Select
               value={formData.category}
               onChange={(e) => handleChange("category", e.target.value)}
             >
-<option value="">Select category...</option>
+              <option value="">Select category...</option>
               <option key="work" value="Work">Work</option>
               <option key="personal" value="Personal">Personal</option>
               <option key="other" value="Other">Other</option>
@@ -179,18 +202,39 @@ const TaskForm = ({ onSubmit, categories = [], initialTask = null, onCancel }) =
           </FormField>
         </div>
 
-        <FormField
-          label="Due Date"
-          error={errors.dueDate}
-        >
-          <Input
-            type="date"
-            value={formData.dueDate}
-            onChange={(e) => handleChange("dueDate", e.target.value)}
-            className={errors.dueDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : ""}
-            min={new Date().toISOString().split("T")[0]}
-          />
-        </FormField>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            label="Assignee"
+          >
+            <Select
+              value={formData.assignee}
+              onChange={(e) => handleChange("assignee", e.target.value)}
+              disabled={loadingAssignees}
+            >
+              <option value="">
+                {loadingAssignees ? "Loading assignees..." : "Select assignee..."}
+              </option>
+              {assignees.map(assignee => (
+                <option key={assignee.Id} value={assignee.name}>
+                  {assignee.name}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+
+          <FormField
+            label="Due Date"
+            error={errors.dueDate}
+          >
+            <Input
+              type="date"
+              value={formData.dueDate}
+              onChange={(e) => handleChange("dueDate", e.target.value)}
+              className={errors.dueDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : ""}
+              min={new Date().toISOString().split("T")[0]}
+            />
+          </FormField>
+        </div>
 
         <div className="flex gap-3 pt-2">
           <Button

@@ -12,8 +12,9 @@ import SearchBar from "@/components/molecules/SearchBar"
 import Button from "@/components/atoms/Button"
 
 const TaskManagement = () => {
-  const [tasks, setTasks] = useState([])
+const [tasks, setTasks] = useState([])
   const [categories, setCategories] = useState([])
+  const [assignees, setAssignees] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [searchQuery, setSearchQuery] = useState("")

@@ -124,7 +124,7 @@ const TaskCard = ({ task, onToggleComplete, onDelete, onEdit }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Badge variant={getPriorityVariant(task.priority)}>
                   <ApperIcon name={getPriorityIcon(task.priority)} className="w-3 h-3 mr-1" />
@@ -135,6 +135,13 @@ const TaskCard = ({ task, onToggleComplete, onDelete, onEdit }) => {
                   <Badge variant="category">
                     <ApperIcon name="Tag" className="w-3 h-3 mr-1" />
                     {task.category}
+                  </Badge>
+                )}
+                
+                {task.assignee && (
+                  <Badge variant="default">
+                    <ApperIcon name="User" className="w-3 h-3 mr-1" />
+                    {task.assignee}
                   </Badge>
                 )}
               </div>
