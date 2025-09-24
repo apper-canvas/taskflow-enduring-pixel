@@ -36,9 +36,10 @@ export const assigneeService = {
         return this.getAllAssignees()
       }
       
-      return response.data.map(assignee => ({
+return response.data.map(assignee => ({
         Id: assignee.Id,
-        name: assignee.name_c || assignee.Name || ''
+        name: assignee.Name || '',
+        assignee_c: assignee.assignee_c || null
       }))
     } catch (error) {
       console.error("Error fetching assignees:", error?.response?.data?.message || error)
@@ -65,9 +66,10 @@ export const assigneeService = {
       }
       
       const assignee = response.data
-      return {
+return {
         Id: assignee.Id,
-        name: assignee.name_c || assignee.Name || ''
+        name: assignee.Name || '',
+        assignee_c: assignee.assignee_c || null
       }
     } catch (error) {
       console.error(`Error fetching assignee ${id}:`, error?.response?.data?.message || error)
@@ -80,8 +82,8 @@ export const assigneeService = {
       const apperClient = initializeApperClient()
       const params = {
         records: [{
-          name_c: assigneeData.name || '',
-          Name: assigneeData.name || ''
+Name: assigneeData.name || '',
+          assignee_c: assigneeData.assignee_c || null
         }]
       }
       
@@ -106,8 +108,9 @@ export const assigneeService = {
         if (successful.length > 0) {
           const assignee = successful[0].data
           return {
-            Id: assignee.Id,
-            name: assignee.name_c || assignee.Name || ''
+Id: assignee.Id,
+            name: assignee.Name || '',
+            assignee_c: assignee.assignee_c || null
           }
         }
       }
@@ -125,8 +128,10 @@ export const assigneeService = {
       const updateData = {}
       
       if (updates.name !== undefined) {
-        updateData.name_c = updates.name
-        updateData.Name = updates.name
+updateData.Name = updates.name
+      }
+      if (updates.assignee_c !== undefined) {
+        updateData.assignee_c = updates.assignee_c
       }
       
       const params = {
@@ -156,9 +161,10 @@ export const assigneeService = {
         
         if (successful.length > 0) {
           const assignee = successful[0].data
-          return {
+return {
             Id: assignee.Id,
-            name: assignee.name_c || assignee.Name || ''
+            name: assignee.Name || '',
+            assignee_c: assignee.assignee_c || null
           }
         }
       }
@@ -215,9 +221,9 @@ export const assigneeService = {
 
       const apperClient = initializeApperClient()
       const params = {
-        records: initialAssignees.map(assignee => ({
-          name_c: assignee.name,
-          Name: assignee.name
+records: initialAssignees.map(assignee => ({
+          Name: assignee.name,
+          assignee_c: assignee.assignee_c || null
         }))
       }
       
