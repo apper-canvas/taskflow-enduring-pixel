@@ -166,9 +166,12 @@ const TaskForm = ({ onSubmit, categories = [], initialTask = null, onCancel }) =
               value={formData.category}
               onChange={(e) => handleChange("category", e.target.value)}
             >
-              <option value="">Select category...</option>
+<option value="">Select category...</option>
+              <option key="work" value="Work">Work</option>
+              <option key="personal" value="Personal">Personal</option>
+              <option key="other" value="Other">Other</option>
               {categories.map(category => (
-<option key={category.Id} value={category.name}>
+                <option key={category.Id} value={category.name}>
                   {category.name}
                 </option>
               ))}
